@@ -2,7 +2,10 @@ import os
 from typing import Dict, Any
 from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage
+from dotenv import load_dotenv
 from Agents.state import PipelineState
+
+load_dotenv()
 
 def diagnostic_node(state: PipelineState) -> Dict[str, Any]:
     """
@@ -42,8 +45,12 @@ def diagnostic_node(state: PipelineState) -> Dict[str, Any]:
     """
 
     try:
-        # Initialize Groq client (automatically picks up GROQ_API_KEY from environment)
-        llm = ChatGroq(model="openai/gpt-oss-20b", temperature=0.2)
+
+        api_key= os.getenv("GROQ_API_KEY")
+        if not api_key:
+            raise ValueError("GROQ_API_KEY is missing from environment variables or .env file.")
+        
+        llm = ChatGroq(api_key=api_key,model="openai/gpt-oss-20b", temperature=0.2)
         response = llm.invoke([HumanMessage(content=prompt)])
         diagnosis_text = response.content
     except Exception as e:
