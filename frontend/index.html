@@ -15,11 +15,11 @@
                 <h1 class="text-3xl font-extrabold text-blue-400 flex items-center gap-3">
                     <i data-lucide="shield-alert" class="w-8 h-8"></i> Data Pipeline Detective
                 </h1>
-                <p class="text-slate-400 mt-1">Autonomous multi-agent team for data quality debugging & prevention.</p>
+                <p class="text-slate-400 mt-1">Autonomous multi-agent team powered by Groq & LangGraph.</p>
             </div>
             <div class="hidden md:flex items-center gap-2 bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg text-xs text-slate-400">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                LangGraph Engine Active
+                Groq LLM Engine Active
             </div>
         </header>
 
@@ -40,31 +40,19 @@
                 <i data-lucide="loader-2" class="w-10 h-10"></i>
             </div>
             <h3 class="text-lg font-semibold text-slate-200">Agent Team at Work...</h3>
-            <p class="text-sm text-slate-400 mt-1">Profiler $\rightarrow$ Anomaly $\rightarrow$ Root Cause $\rightarrow$ Impact $\rightarrow$ SQL Fix $\rightarrow$ Validation $\rightarrow$ Contract</p>
+            <p class="text-sm text-slate-400 mt-1">Profiler $\rightarrow$ Anomaly $\rightarrow$ Groq Diagnostic Reasoning $\rightarrow$ Conditional SQL Fix $\rightarrow$ Validation $\rightarrow$ Contract</p>
         </div>
 
         <!-- Results Dashboard -->
         <div id="results" class="space-y-6 hidden">
             
-            <!-- Top Grid: Root Cause & Downstream Impact -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Root Cause Card -->
-                <div class="bg-slate-900 border border-amber-500/30 p-6 rounded-2xl shadow-lg relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
-                    <div class="flex items-center gap-2 mb-3 text-amber-400 font-semibold text-lg">
-                        <i data-lucide="search" class="w-5 h-5"></i> Root-Cause Diagnosis
-                    </div>
-                    <p id="rootCauseText" class="text-slate-300 text-sm leading-relaxed"></p>
+            <!-- Unified LLM Diagnostic Reasoning Card -->
+            <div class="bg-slate-900 border border-amber-500/30 p-6 rounded-2xl shadow-lg relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
+                <div class="flex items-center gap-2 mb-3 text-amber-400 font-semibold text-lg">
+                    <i data-lucide="brain" class="w-5 h-5"></i> LLM Diagnostic & Impact Reasoning
                 </div>
-
-                <!-- Downstream Impact Card -->
-                <div class="bg-slate-900 border border-rose-500/30 p-6 rounded-2xl shadow-lg relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-rose-500"></div>
-                    <div class="flex items-center gap-2 mb-3 text-rose-400 font-semibold text-lg">
-                        <i data-lucide="trending-down" class="w-5 h-5"></i> Downstream Business Impact
-                    </div>
-                    <p id="impactText" class="text-slate-300 text-sm leading-relaxed whitespace-pre-line"></p>
-                </div>
+                <div id="diagnosisText" class="text-slate-300 text-sm leading-relaxed whitespace-pre-line"></div>
             </div>
 
             <!-- Metric Snapshot Bar -->
@@ -147,10 +135,9 @@
                 
                 const data = await response.json();
 
-                // Populate UI Cards
-                document.getElementById('rootCauseText').innerText = data.root_cause || "No issues identified.";
-                document.getElementById('impactText').innerText = data.downstream_impact || "No downstream impact detected.";
-                document.getElementById('sqlFixText').innerText = data.database_fix || "No SQL fix generated.";
+                // Populate UI Cards with unified Groq diagnosis
+                document.getElementById('diagnosisText').innerText = data.diagnosis || "No diagnosis generated.";
+                document.getElementById('sqlFixText').innerText = data.database_fix || "No SQL fix generated (Data may be pristine).";
                 document.getElementById('contractText').innerText = data.data_contract || "No contract generated.";
 
                 // Populate Quick Metrics Bar
@@ -161,7 +148,7 @@
                 document.getElementById('metricRows').innerText = profile.row_count ?? '0';
                 document.getElementById('metricDupes').innerText = profile.duplicate_rows ?? '0';
                 document.getElementById('metricAnomalies').innerText = anomaly.anomaly_count ?? '0';
-                document.getElementById('metricStatus').innerText = validation.status ?? 'UNKNOWN';
+                document.getElementById('metricStatus').innerText = validation.status ?? 'BYPASSED';
 
                 document.getElementById('results').classList.remove('hidden');
             } catch (err) {
