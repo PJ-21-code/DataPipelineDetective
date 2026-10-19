@@ -43,7 +43,7 @@ def diagnostic_node(state: PipelineState) -> Dict[str, Any]:
 
     try:
         # Initialize Groq client (automatically picks up GROQ_API_KEY from environment)
-        llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.2)
+        llm = ChatGroq(model="openai/gpt-oss-20b", temperature=0.2)
         response = llm.invoke([HumanMessage(content=prompt)])
         diagnosis_text = response.content
     except Exception as e:
