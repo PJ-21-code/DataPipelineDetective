@@ -20,6 +20,8 @@
 - [Multi-Agent Roster](#-multi-agent-roster)
 - [Technology Stack](#-technology-stack)
 - [Repository Structure](#-repository-structure)
+  - [Diagrammatic Architecture](#diagrammatic-architecture)
+  - [Directory Tree](#directory-tree)
 - [Step-by-Step Setup & Installation](#-step-by-step-setup--installation)
   - [Prerequisites](#prerequisites)
   - [1. Clone Repository](#1-clone-repository)
@@ -85,38 +87,38 @@ Data Pipeline Detective is engineered as a layered, stateful multi-agent system:
 
 ```mermaid
 flowchart TD
-    subgraph Client["Presentation & Ingestion Layer"]
-        UI["Web Dashboard (Tailwind CSS / Lucide)"]
-        API_CALL["REST API Client (POST /api/investigate)"]
+    subgraph Client ["Presentation & Ingestion Layer"]
+        UI["Web Dashboard<br/>(Tailwind CSS / Lucide)"]
+        API_CALL["REST API Client<br/>(POST /api/investigate)"]
     end
 
-    subgraph Server["FastAPI Service Layer (main.py)"]
-        UPLOAD["File Handler & Temp Sandbox Storage"]
+    subgraph Server ["FastAPI Service Layer (main.py)"]
+        UPLOAD["File Handler &<br/>Temp Sandbox Storage"]
         STATE_INIT["Initialize PipelineState"]
         CLEANUP["Sandbox File Cleanup"]
         RESPONSE["JSON State Response"]
     end
 
-    subgraph LangGraph["LangGraph Multi-Agent Orchestration (Agents/graph.py)"]
-        START([START]) --> AG1["1. Profiler Agent\n(Agents/profiler.py)"]
-        AG1 --> AG2["2. Anomaly Detection Agent\n(Agents/anomaly.py - Isolation Forest)"]
-        AG2 --> AG3["3. Diagnostic Reasoning Agent\n(Agents/diagnostic.py - Groq LLM)"]
+    subgraph LangGraph ["LangGraph Multi-Agent Orchestration (Agents/graph.py)"]
+        START_NODE(["Start"]) --> AG1["1. Profiler Agent<br/>(Agents/profiler.py)"]
+        AG1 --> AG2["2. Anomaly Detection Agent<br/>(Agents/anomaly.py - Isolation Forest)"]
+        AG2 --> AG3["3. Diagnostic Reasoning Agent<br/>(Agents/diagnostic.py - Groq LLM)"]
         
         AG3 --> DECISION{"has_issues?"}
         
-        DECISION -- "Yes (Issues Found)" --> AG4["4. SQL Remediation Agent\n(Agents/sql_fix.py)"]
-        AG4 --> AG5["5. Validation Agent\n(Agents/validation.py)"]
-        AG5 --> AG6["6. Data Contract Agent\n(Agents/contract.py)"]
+        DECISION -->|"Yes (Issues Found)"| AG4["4. SQL Remediation Agent<br/>(Agents/sql_fix.py)"]
+        AG4 --> AG5["5. Validation Agent<br/>(Agents/validation.py)"]
+        AG5 --> AG6["6. Data Contract Agent<br/>(Agents/contract.py)"]
         
-        DECISION -- "No (Pristine Data)" --> AG6
+        DECISION -->|"No (Pristine Data)"| AG6
         
-        AG6 --> END_NODE([END])
+        AG6 --> END_NODE(["End"])
     end
 
     UI -->|Upload CSV| UPLOAD
     API_CALL -->|Multipart CSV| UPLOAD
     UPLOAD --> STATE_INIT
-    STATE_INIT --> START
+    STATE_INIT --> START_NODE
     END_NODE --> CLEANUP
     CLEANUP --> RESPONSE
     RESPONSE -->|Display Diagnostics & Fixes| UI
@@ -209,6 +211,37 @@ sequenceDiagram
 ---
 
 ## 📁 Repository Structure
+
+### Diagrammatic Architecture
+
+```mermaid
+graph TD
+    Root["📁 DataPipelineDetective/"]
+    
+    Root --> Agents["📁 Agents/<br/><i>LangGraph Multi-Agent Module</i>"]
+    Root --> Eval["📁 evaluation/<br/><i>Benchmarking & Test Suite</i>"]
+    Root --> Frontend["📁 frontend/<br/><i>Tailwind Dashboard Assets</i>"]
+    Root --> Core["⚙️ Core Entrypoints & Config"]
+
+    Agents --> A1["profiler.py<br/><i>Schema & Null Profiler</i>"]
+    Agents --> A2["anomaly.py<br/><i>Isolation Forest Anomaly Agent</i>"]
+    Agents --> A3["diagnostic.py<br/><i>Groq Cognitive LLM Reasoner</i>"]
+    Agents --> A4["graph.py & state.py<br/><i>StateGraph & Conditional Router</i>"]
+    Agents --> A5["sql_fix.py<br/><i>Window CTE Remediation</i>"]
+    Agents --> A6["validation.py<br/><i>Pandas In-Memory Simulation</i>"]
+    Agents --> A7["contract.py<br/><i>Pydantic v2 Guardrails</i>"]
+
+    Eval --> E1["evaluation_agent.py<br/><i>Automated Test Harness</i>"]
+    Eval --> E2["test_cases/<br/><i>Sample CSV Edge Cases</i>"]
+
+    Frontend --> F1["index.html<br/><i>Single-Page App (Tailwind / Lucide)</i>"]
+
+    Core --> C1["main.py<br/><i>FastAPI Server & REST API</i>"]
+    Core --> C2[".env<br/><i>GROQ_API_KEY Config</i>"]
+    Core --> C3["requirements.txt<br/><i>Python Dependencies</i>"]
+```
+
+### Directory Tree
 
 ```text
 DataPipelineDetective/
