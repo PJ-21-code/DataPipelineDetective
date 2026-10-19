@@ -4,8 +4,8 @@ class PipelineState(TypedDict):
     file_path: str
     profile: Dict[str, Any]
     anomaly: Dict[str, Any]
-    root_cause: str
-    downstream_impact: str
+    diagnosis: str          
+    has_issues: bool         
     database_fix: str
-    validation: Dict[str,Any]
+    validation: Dict[str, Any]
     data_contract: str
