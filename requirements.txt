@@ -6,3 +6,4 @@ pydantic
 python-multipart
 langgraph 
 langchain-groq
+python-dotenv
