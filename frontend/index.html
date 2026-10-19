@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Pipeline Detective | AI Agent Diagnostics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-6 font-sans">
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 flex items-center justify-between border-b border-slate-800 pb-6">
+            <div>
+                <h1 class="text-3xl font-extrabold text-blue-400 flex items-center gap-3">
+                    <i data-lucide="shield-alert" class="w-8 h-8"></i> Data Pipeline Detective
+                </h1>
+                <p class="text-slate-400 mt-1">Autonomous multi-agent team for data quality debugging & prevention.</p>
+            </div>
+            <div class="hidden md:flex items-center gap-2 bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg text-xs text-slate-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                LangGraph Engine Active
+            </div>
+        </header>
+
+        <!-- Upload Section -->
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl mb-8">
+            <label class="block text-sm font-medium text-slate-300 mb-2">Upload Corrupted CSV Pipeline Log</label>
+            <div class="flex flex-col sm:flex-row gap-4 items-center">
+                <input type="file" id="csvFile" accept=".csv" class="block w-full text-sm text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer bg-slate-950 border border-slate-800 rounded-xl"/>
+                <button onclick="runInvestigation()" id="dispatchBtn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-2.5 rounded-xl transition flex items-center justify-center gap-2 shrink-0 shadow-lg shadow-blue-600/20">
+                    <i data-lucide="play" class="w-4 h-4"></i> Dispatch Agents
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="hidden text-center py-16 bg-slate-900/50 border border-slate-800 rounded-2xl mb-8">
+            <div class="inline-block animate-spin text-blue-500 mb-4">
+                <i data-lucide="loader-2" class="w-10 h-10"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-200">Agent Team at Work...</h3>
+            <p class="text-sm text-slate-400 mt-1">Profiler $\rightarrow$ Anomaly $\rightarrow$ Root Cause $\rightarrow$ Impact $\rightarrow$ SQL Fix $\rightarrow$ Validation $\rightarrow$ Contract</p>
+        </div>
+
+        <!-- Results Dashboard -->
+        <div id="results" class="space-y-6 hidden">
+            
+            <!-- Top Grid: Root Cause & Downstream Impact -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Root Cause Card -->
+                <div class="bg-slate-900 border border-amber-500/30 p-6 rounded-2xl shadow-lg relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
+                    <div class="flex items-center gap-2 mb-3 text-amber-400 font-semibold text-lg">
+                        <i data-lucide="search" class="w-5 h-5"></i> Root-Cause Diagnosis
+                    </div>
+                    <p id="rootCauseText" class="text-slate-300 text-sm leading-relaxed"></p>
+                </div>
+
+                <!-- Downstream Impact Card -->
+                <div class="bg-slate-900 border border-rose-500/30 p-6 rounded-2xl shadow-lg relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-rose-500"></div>
+                    <div class="flex items-center gap-2 mb-3 text-rose-400 font-semibold text-lg">
+                        <i data-lucide="trending-down" class="w-5 h-5"></i> Downstream Business Impact
+                    </div>
+                    <p id="impactText" class="text-slate-300 text-sm leading-relaxed whitespace-pre-line"></p>
+                </div>
+            </div>
+
+            <!-- Metric Snapshot Bar -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-slate-900 border border-slate-800 p-4 rounded-2xl text-center">
+                <div class="p-2">
+                    <span class="text-xs text-slate-400 block">Total Rows</span>
+                    <span id="metricRows" class="text-xl font-bold text-slate-100">-</span>
+                </div>
+                <div class="p-2">
+                    <span class="text-xs text-slate-400 block">Duplicates Found</span>
+                    <span id="metricDupes" class="text-xl font-bold text-amber-400">-</span>
+                </div>
+                <div class="p-2">
+                    <span class="text-xs text-slate-400 block">ML Outliers</span>
+                    <span id="metricAnomalies" class="text-xl font-bold text-rose-400">-</span>
+                </div>
+                <div class="p-2">
+                    <span class="text-xs text-slate-400 block">Validation Status</span>
+                    <span id="metricStatus" class="text-xl font-bold text-emerald-400">-</span>
+                </div>
+            </div>
+
+            <!-- Code Fix & Prevention Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- SQL Fix -->
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg flex flex-col">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-emerald-400 font-semibold text-lg flex items-center gap-2">
+                            <i data-lucide="database" class="w-5 h-5"></i> Proposed SQL Remediation
+                        </span>
+                        <button onclick="copyCode('sqlFixText', this)" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy SQL
+                        </button>
+                    </div>
+                    <pre class="bg-slate-950 p-4 rounded-xl text-emerald-300 font-mono text-xs overflow-x-auto flex-grow border border-slate-800/80"><code id="sqlFixText"></code></pre>
+                </div>
+
+                <!-- Data Contract Guardrail -->
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-lg flex flex-col">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-blue-400 font-semibold text-lg flex items-center gap-2">
+                            <i data-lucide="shield-check" class="w-5 h-5"></i> Pydantic Prevention Contract
+                        </span>
+                        <button onclick="copyCode('contractText', this)" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Contract
+                        </button>
+                    </div>
+                    <pre class="bg-slate-950 p-4 rounded-xl text-blue-300 font-mono text-xs overflow-x-auto flex-grow border border-slate-800/80"><code id="contractText"></code></pre>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+        lucide.createIcons();
+
+        async function runInvestigation() {
+            const fileInput = document.getElementById('csvFile');
+            if (fileInput.files.length === 0) {
+                alert('Please select a CSV file first.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('dispatchBtn').disabled = true;
+
+            try {
+                const response = await fetch('/api/investigate', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) throw new Error('Investigation failed on server.');
+                
+                const data = await response.json();
+
+                // Populate UI Cards
+                document.getElementById('rootCauseText').innerText = data.root_cause || "No issues identified.";
+                document.getElementById('impactText').innerText = data.downstream_impact || "No downstream impact detected.";
+                document.getElementById('sqlFixText').innerText = data.database_fix || "No SQL fix generated.";
+                document.getElementById('contractText').innerText = data.data_contract || "No contract generated.";
+
+                // Populate Quick Metrics Bar
+                const profile = data.profile || {};
+                const anomaly = data.anomaly || {};
+                const validation = data.validation || {};
+
+                document.getElementById('metricRows').innerText = profile.row_count ?? '0';
+                document.getElementById('metricDupes').innerText = profile.duplicate_rows ?? '0';
+                document.getElementById('metricAnomalies').innerText = anomaly.anomaly_count ?? '0';
+                document.getElementById('metricStatus').innerText = validation.status ?? 'UNKNOWN';
+
+                document.getElementById('results').classList.remove('hidden');
+            } catch (err) {
+                alert('Error running investigation: ' + err.message);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('dispatchBtn').disabled = false;
+                lucide.createIcons();
+            }
+        }
+
+        function copyCode(elementId, btn) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i> Copied!';
+                lucide.createIcons();
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    lucide.createIcons();
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

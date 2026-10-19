@@ -1,0 +1,14 @@
+# Python & Virtual Environments
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Environment Variables & Secrets
+.env
+
+# OS Files
+.DS_Store
+
+# Temporary uploads/logs
+*.tmp
