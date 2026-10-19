@@ -362,6 +362,4 @@ curl -X POST "http://localhost:8000/api/investigate" \
 
 ---
 
-## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
