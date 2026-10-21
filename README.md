@@ -433,7 +433,3 @@ curl -X POST "http://localhost:8000/api/investigate" \
 - [ ] **dbt Model & Test Generation**: Export remediation queries directly as dbt `.sql` models and `.yml` schema tests.
 
 ---
-
-## 📄 License
-
-This project is licensed under the MIT License. See [LICENSE](file:///c:/Users/pranj/DataPipelineDetective/LICENSE) for details.
