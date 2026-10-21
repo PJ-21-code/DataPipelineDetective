@@ -6,6 +6,15 @@
     <title>Data Pipeline Detective | AI Agent Diagnostics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+    #diagnosisText table { width: 100%; margin-top: 1rem; margin-bottom: 1rem; border-collapse: collapse; font-size: 0.875rem; }
+    #diagnosisText th, #diagnosisText td { border: 1px solid #334155; padding: 0.5rem 0.75rem; text-align: left; }
+    #diagnosisText th { background-color: #1e293b; color: #38bdf8; }
+    #diagnosisText h3 { font-size: 1rem; font-weight: 700; color: #fbbf24; margin-top: 1rem; margin-bottom: 0.5rem; }
+    #diagnosisText ul { list-style-type: disc; padding-left: 1.5rem; margin-top: 0.5rem; }
+    </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen p-6 font-sans">
     <div class="max-w-5xl mx-auto">
@@ -136,7 +145,7 @@
                 const data = await response.json();
 
                 // Populate UI Cards with unified Groq diagnosis
-                document.getElementById('diagnosisText').innerText = data.diagnosis || "No diagnosis generated.";
+                document.getElementById('diagnosisText').innerHTML = marked.parse(data.diagnosis || "No diagnosis generated.");
                 document.getElementById('sqlFixText').innerText = data.database_fix || "No SQL fix generated (Data may be pristine).";
                 document.getElementById('contractText').innerText = data.data_contract || "No contract generated.";
 
