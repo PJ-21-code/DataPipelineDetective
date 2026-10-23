@@ -1,11 +1,13 @@
 # 🔍 Data Pipeline Detective
 
-> **Autonomous multi-agent system powered by LangGraph and Groq for real-time data pipeline anomaly detection, cognitive root-cause diagnostics, impact analysis, self-healing SQL remediation, and preventative data contracts.**
+> **Autonomous multi-agent system powered by LangGraph and Groq for real-time data pipeline anomaly detection, cognitive root-cause diagnostics, impact analysis, self-healing SQL remediation, and preventative data contracts—featuring secure bcrypt authentication and SQLite historical persistence.**
 
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com)
 [![LangGraph](https://img.shields.io/badge/Orchestration-LangGraph-orange.svg)](https://github.com/langchain-ai/langgraph)
 [![Groq](https://img.shields.io/badge/LLM-Groq%20Llama%203-f55036.svg)](https://groq.com/)
+[![SQLite](https://img.shields.io/badge/Database-SQLite-003B57.svg?logo=sqlite)](https://www.sqlite.org/)
+[![Bcrypt](https://img.shields.io/badge/Security-Bcrypt%20Auth-4E5D6C.svg)](https://github.com/pyca/bcrypt)
 [![Scikit-Learn](https://img.shields.io/badge/ML-Scikit--Learn-F7931E.svg?logo=scikitlearn)](https://scikit-learn.org/)
 [![TailwindCSS](https://img.shields.io/badge/UI-TailwindCSS-38B2AC.svg?logo=tailwind-css)](https://tailwindcss.com/)
 
@@ -16,8 +18,12 @@
 - [Key Features](#-key-features)
 - [System Architecture](#-system-architecture)
   - [Workflow Diagram](#workflow-diagram)
-  - [Agent Interaction Sequence](#agent-interaction-sequence)
+  - [Agent & Database Interaction Sequence](#agent--database-interaction-sequence)
 - [Multi-Agent Roster](#-multi-agent-roster)
+- [Database Architecture & Security](#-database-architecture--security)
+  - [Relational Schema Design](#relational-schema-design)
+  - [Bcrypt Authentication & Password Hashing](#bcrypt-authentication--password-hashing)
+  - [Privacy-by-Design & Ephemeral Sandbox Lifecycle](#privacy-by-design--ephemeral-sandbox-lifecycle)
 - [Technology Stack](#-technology-stack)
 - [Repository Structure](#-repository-structure)
   - [Diagrammatic Architecture](#diagrammatic-architecture)
@@ -30,8 +36,10 @@
   - [4. Configure Environment Variables](#4-configure-environment-variables)
   - [5. Run the Application](#5-run-the-application)
 - [Usage Guide](#-usage-guide)
-  - [Web Interface](#web-interface)
-  - [REST API Endpoint](#rest-api-endpoint)
+  - [1. User Authentication (Login & Signup)](#1-user-authentication-login--signup)
+  - [2. Diagnostic Dashboard & History Sidebar](#2-diagnostic-dashboard--history-sidebar)
+  - [3. Live Container Admin Dashboard](#3-live-container-admin-dashboard)
+  - [4. REST API Endpoints](#4-rest-api-endpoints)
 - [Roadmap & Evaluation](#-roadmap--evaluation)
 - [License](#-license)
 
@@ -41,15 +49,16 @@
 
 Modern data pipelines fail silently. Inadvertent upstream schema mutations, duplicated batch ingestion windows, unexpected null injections, and subtle distribution shifts cascade into downstream data lakes. The consequences are severe: poisoned analytics dashboards, silent ML feature drift, inaccurate financial calculations, and broken automated decision engines.
 
-**Data Pipeline Detective** is an autonomous, cognitive diagnostic and self-healing platform designed to monitor, triage, and repair data pipelines before corruption infects downstream consumers. 
+**Data Pipeline Detective** is an autonomous, cognitive diagnostic and self-healing platform designed to monitor, triage, repair, and persist data pipeline audit histories before corruption infects downstream consumers. 
 
-Powered by **LangGraph** multi-agent orchestration, **Groq high-speed LLM inference**, **Scikit-learn Isolation Forest**, and a **FastAPI** backend, the system operates as an intelligent on-call data reliability engineer:
+Powered by **LangGraph** multi-agent orchestration, **Groq high-speed LLM inference**, **Scikit-learn Isolation Forest**, **SQLite persistence**, and a **FastAPI** backend secured with **Bcrypt**, the system operates as an intelligent on-call data reliability engineer:
 1. **Profiles & Audits**: Inspects incoming CSV payloads for schema fidelity, duplicate records, null frequency, and statistical distributions.
 2. **Detects Unsupervised Outliers**: Discovers multi-dimensional statistical anomalies using Isolation Forests that deterministic rules miss.
 3. **Reasoning Engine (Groq LLM)**: Synthesizes technical profile metrics and anomaly patterns into human-readable engineering root-cause analyses and executive-level business risk assessments.
 4. **Conditional Self-Healing**: Dynamically evaluates pipeline health (`has_issues`). If anomalies or corruption are detected, it generates targeted SQL remediation scripts (using window functions and `COALESCE`) and simulates the repair in-memory to validate data recovery.
 5. **Smart Bypass**: If the dataset is pristine, the system automatically bypasses remediation and validation nodes, saving compute and eliminating false alarms.
 6. **Preventative Enforcement**: Generates strict, type-annotated **Pydantic Data Contracts** (`extra = 'forbid'`) to enforce schema guardrails at ingestion boundaries.
+7. **Secure Authentication & Historical Auditing**: Encrypts user credentials with **Bcrypt** and records every diagnostic assessment to an embedded **SQLite** database (`detective.db`), enabling team members to instantly review historical pipeline failures while maintaining **Zero Raw Data Retention** for maximum compliance and privacy.
 
 ---
 
@@ -64,8 +73,12 @@ Powered by **LangGraph** multi-agent orchestration, **Groq high-speed LLM infere
 - **Self-Healing SQL Remediation**: Produces deterministic SQL queries utilizing Common Table Expressions (CTEs) with Window Functions (`ROW_NUMBER() OVER(PARTITION BY ... ORDER BY (SELECT NULL))`) for partition-based deduplication and `COALESCE` statements for missing value imputation.
 - **In-Memory Simulation & Validation**: Simulates data cleansing transformations in memory using Pandas to guarantee the proposed fix reconciles records, removes duplicates, and sanitizes null values before warehouse deployment.
 - **Preventative Pydantic Data Contracts**: Automatically derives strongly-typed Pydantic validation schemas with `extra = 'forbid'` and optionality flags to reject ill-formed data payloads at the API or streaming ingestion layer.
+- **Secure Bcrypt Authentication**: Salted, one-way password hashing (truncated to 72 bytes per bcrypt standard) protecting user accounts and isolating investigation records across team members.
+- **Persistent Investigation History (SQLite)**: Automatically persists all diagnostic results (profile, anomaly count, Groq diagnostic text, generated SQL fixes, Pydantic contracts) to [`detective.db`](file:///c:/Users/pranj/DataPipelineDetective/detective.db) via [`database.py`](file:///c:/Users/pranj/DataPipelineDetective/database.py) for instant review.
+- **Zero Raw Data Retention (Privacy-by-Design)**: Ephemeral sandbox file lifecycle guarantees raw pipeline datasets are never persisted to disk or database—only sanitized diagnostic metadata and generated code are preserved.
+- **Interactive History Sidebar**: Sidebar navigation in the UI allowing users to switch between past investigations without re-running compute or re-uploading files.
+- **Container Admin Panel (`/admin`)**: Built-in secured administrative view (`/admin?key=...`) to observe registered users and audit past pipeline investigation logs across the live container.
 - **Graceful Fallback Mechanism**: Built-in resilience ensures that even if external LLM APIs experience rate-limiting or network timeouts, deterministic heuristic diagnostics are provided without breaking the pipeline.
-- **Interactive Dark-Mode Dashboard**: Sleek web interface rendered with Tailwind CSS and Lucide icons featuring live Groq engine status indicators, progress bars, metric summary cards, and one-click code copy tools.
 
 ---
 
@@ -73,11 +86,12 @@ Powered by **LangGraph** multi-agent orchestration, **Groq high-speed LLM infere
 
 Data Pipeline Detective is engineered as a layered, stateful multi-agent system:
 
-1. **Presentation Layer**: A single-page web dashboard (`frontend/index.html`) built with Tailwind CSS, Lucide Icons, and vanilla JavaScript for drag-and-drop file ingestion, asynchronous polling, metric visualization, and code copying.
-2. **API & Service Layer**: A high-performance **FastAPI** ASGI server (`main.py`) running on **Uvicorn**. Manages asynchronous multipart uploads, isolated temporary sandbox files, state initialization, and automatic file cleanup.
-3. **Agent Orchestration Layer**: A compiled **LangGraph** `StateGraph` (`Agents/graph.py`) passing a centralized `PipelineState` (`Agents/state.py`) through modular agent nodes with dynamic conditional branching (`route_after_diagnostic`).
-4. **Cognitive & Machine Learning Layer**:
-   - **Groq LLM Engine**: Fast inference via `ChatGroq` powering deep diagnostic reasoning and business impact translation.
+1. **Presentation Layer**: A single-page web dashboard ([`frontend/index.html`](file:///c:/Users/pranj/DataPipelineDetective/frontend/index.html)) built with Tailwind CSS, Lucide Icons, Marked.js, and vanilla JavaScript. Features authentication modals (Sign Up / Log In), an investigation history sidebar with instant historical report switching, drag-and-drop CSV upload, live status spinners, and one-click copy buttons for SQL fixes and Pydantic contracts.
+2. **API & Service Layer**: A high-performance **FastAPI** ASGI server ([`main.py`](file:///c:/Users/pranj/DataPipelineDetective/main.py)) running on **Uvicorn**. Exposes endpoints for user registration (`/api/signup`), authentication (`/api/login`), multipart investigation dispatch with user attribution (`/api/investigate`), historical record querying (`/api/history/{user_id}`), and a secured administrative overview (`/admin`). Manages ephemeral temporary sandbox files and guarantees cleanup.
+3. **Database & Security Layer**: A dedicated persistence module ([`database.py`](file:///c:/Users/pranj/DataPipelineDetective/database.py)) backed by an embedded **SQLite** database ([`detective.db`](file:///c:/Users/pranj/DataPipelineDetective/detective.db)). Manages relational tables for `users` and `investigations`, enforcing foreign key integrity, bcrypt password hashing with salt generation, and JSON payload serialization/deserialization.
+4. **Agent Orchestration Layer**: A compiled **LangGraph** `StateGraph` ([`Agents/graph.py`](file:///c:/Users/pranj/DataPipelineDetective/Agents/graph.py)) passing a centralized `PipelineState` ([`Agents/state.py`](file:///c:/Users/pranj/DataPipelineDetective/Agents/state.py)) through modular agent nodes with dynamic conditional branching (`route_after_diagnostic`).
+5. **Cognitive & Machine Learning Layer**:
+   - **Groq LLM Engine**: Fast inference via `ChatGroq` (`langchain-groq`) powering deep diagnostic reasoning and business impact translation.
    - **Isolation Forest**: Scikit-learn unsupervised model identifying multi-dimensional numeric outliers.
    - **Pandas Data Engine**: In-memory profiling, metric aggregation, and validation simulation.
 
@@ -87,16 +101,28 @@ Data Pipeline Detective is engineered as a layered, stateful multi-agent system:
 
 ```mermaid
 flowchart TD
-    subgraph Client ["Presentation & Ingestion Layer"]
-        UI["Web Dashboard<br/>(Tailwind CSS / Lucide)"]
-        API_CALL["REST API Client<br/>(POST /api/investigate)"]
+    subgraph Client ["Presentation & Ingestion Layer (frontend/index.html)"]
+        AUTH_UI["Auth Modal<br/>(Login / Sign Up)"]
+        HIST_UI["History Sidebar<br/>(Past Investigations)"]
+        DASH_UI["Diagnostic Dashboard<br/>(Tailwind CSS / Lucide)"]
+        API_CALL["REST API Client<br/>(cURL / Pipeline Orchestrator)"]
     end
 
     subgraph Server ["FastAPI Service Layer (main.py)"]
+        AUTH_EP["Auth Endpoints<br/>(/api/signup, /api/login)"]
+        HIST_EP["History Endpoint<br/>(/api/history/{user_id})"]
         UPLOAD["File Handler &<br/>Temp Sandbox Storage"]
         STATE_INIT["Initialize PipelineState"]
-        CLEANUP["Sandbox File Cleanup"]
-        RESPONSE["JSON State Response"]
+        CLEANUP["Ephemeral File Cleanup<br/>(os.remove)"]
+        ADMIN_EP["Admin Dashboard<br/>(/admin?key=...)"]
+    end
+
+    subgraph DB ["Database & Persistence (database.py)"]
+        SQLITE[("SQLite Database<br/>detective.db")]
+        TBL_USERS["users Table<br/>(id, username, password_hash)"]
+        TBL_INV["investigations Table<br/>(id, user_id, filename, timestamp, result_json)"]
+        SQLITE --- TBL_USERS
+        SQLITE --- TBL_INV
     end
 
     subgraph LangGraph ["LangGraph Multi-Agent Orchestration (Agents/graph.py)"]
@@ -115,66 +141,81 @@ flowchart TD
         AG6 --> END_NODE(["End"])
     end
 
-    UI -->|Upload CSV| UPLOAD
-    API_CALL -->|Multipart CSV| UPLOAD
+    AUTH_UI -->|Credentials| AUTH_EP
+    AUTH_EP <-->|Bcrypt Verify / Hash| TBL_USERS
+    HIST_UI -->|Query by user_id| HIST_EP
+    HIST_EP <-->|Fetch Reports| TBL_INV
+
+    DASH_UI -->|Upload CSV + user_id| UPLOAD
+    API_CALL -->|Multipart CSV + user_id| UPLOAD
     UPLOAD --> STATE_INIT
     STATE_INIT --> START_NODE
     END_NODE --> CLEANUP
-    CLEANUP --> RESPONSE
-    RESPONSE -->|Display Diagnostics & Fixes| UI
-    RESPONSE -->|Return Diagnostic JSON| API_CALL
+    CLEANUP -->|Persist JSON State| TBL_INV
+    CLEANUP -->|Return JSON| DASH_UI
+    CLEANUP -->|Return JSON| API_CALL
+    ADMIN_EP <-->|Query Live Stats| SQLITE
 ```
 
 ---
 
-### Agent Interaction Sequence
+### Agent & Database Interaction Sequence
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor User as Data Engineer / Client
+    participant UI as Web Dashboard (index.html)
     participant API as FastAPI (main.py)
-    participant State as PipelineState
-    participant Profiler as Profiler Agent
-    participant Anomaly as Anomaly Agent (Isolation Forest)
-    participant GroqDiag as Diagnostic Agent (Groq LLM)
-    participant Router as Conditional Router
-    participant SQLFix as SQL Fix Agent
-    participant Val as Validation Agent
-    participant Contract as Data Contract Agent
+    participant DB as SQLite DB (database.py)
+    participant Sandbox as Temp File Sandbox
+    participant Graph as LangGraph Team (graph.py)
 
-    User->>API: POST /api/investigate (CSV payload)
-    API->>API: Save payload to isolated temp file
-    API->>State: Initialize state with file_path
-    
-    API->>Profiler: Execute profiler_node
-    Profiler-->>State: Record row_count, duplicates, null_counts, dtypes
-    
-    API->>Anomaly: Execute anomaly_node
-    Anomaly-->>State: Fit Isolation Forest, record anomaly_count & percentage
-    
-    API->>GroqDiag: Execute diagnostic_node (Groq ChatGroq API)
-    Note over GroqDiag: Evaluates issues & synthesizes<br/>Root-Cause + Downstream Impact
-    GroqDiag-->>State: Record diagnosis & has_issues flag
-    
-    API->>Router: route_after_diagnostic(state)
-    
-    alt Issues Detected (has_issues == True)
-        Router->>SQLFix: Execute sql_fix_node
-        SQLFix-->>State: Generate corrective SQL (Window CTE + COALESCE)
-        
-        Router->>Val: Execute validation_node
-        Val-->>State: Run in-memory simulation, record cleaned metrics
-        
-        Router->>Contract: Execute contract_node
-        Contract-->>State: Generate Pydantic schema with extra='forbid'
-    else Data is Clean (has_issues == False)
-        Router->>Contract: Bypass SQL & Validation -> Execute contract_node
-        Contract-->>State: Generate preventative Pydantic schema
+    rect rgb(20, 30, 45)
+    Note over User,DB: Phase 1: Secure Authentication & History Retrieval
+    User->>UI: Enter Username & Password
+    UI->>API: POST /api/login (or /api/signup)
+    API->>DB: authenticate_user(username, password)
+    Note over DB: Bcrypt verification with salt check
+    DB-->>API: {success: true, user_id, username}
+    API-->>UI: Authenticated session (saved to localStorage)
+    UI->>API: GET /api/history/{user_id}
+    API->>DB: get_user_investigations(user_id)
+    DB-->>API: Historical investigations list
+    API-->>UI: Render past investigation history sidebar
     end
-    
-    API->>API: Clean up temporary file
-    API-->>User: Return complete PipelineState (JSON / UI Dashboard)
+
+    rect rgb(30, 25, 45)
+    Note over User,Sandbox: Phase 2: Autonomous Investigation & Ephemeral Sandbox
+    User->>UI: Select CSV & Click "Dispatch Agents"
+    UI->>API: POST /api/investigate (file, user_id)
+    API->>Sandbox: Write to temporary file (tempfile.NamedTemporaryFile)
+    API->>Graph: Invoke StateGraph(file_path, user_id)
+    Graph->>Graph: 1. Profile Schema & Duplicates
+    Graph->>Graph: 2. Isolation Forest Anomaly Detection
+    Graph->>Graph: 3. Groq LLM Diagnostic Reasoning
+    alt has_issues == True
+        Graph->>Graph: 4. Generate SQL CTE Fix
+        Graph->>Graph: 5. Simulate In-Memory Validation
+        Graph->>Graph: 6. Derive Pydantic Data Contract
+    else has_issues == False
+        Graph->>Graph: Bypass 4 & 5 -> Derive Pydantic Contract
+    end
+    Graph-->>API: Return final PipelineState
+    end
+
+    rect rgb(25, 40, 30)
+    Note over API,UI: Phase 3: Persistence & Zero Raw Data Retention
+    API->>DB: save_investigation(user_id, filename, final_state)
+    Note over DB: Persists JSON diagnostic result ONLY.<br/>Raw CSV is NEVER stored.
+    API->>Sandbox: os.remove(temp_file_path) (Guaranteed Sandbox Wipe)
+    API-->>UI: Return final PipelineState JSON
+    UI->>UI: Render LLM Diagnosis, Metrics, SQL Fix & Contract
+    UI->>API: GET /api/history/{user_id} (Refresh sidebar)
+    API->>DB: get_user_investigations(user_id)
+    DB-->>API: Updated history list
+    API-->>UI: Update history sidebar with new investigation
+    end
 ```
 
 ---
@@ -192,20 +233,74 @@ sequenceDiagram
 
 ---
 
+## 🗄️ Database Architecture & Security
+
+### Relational Schema Design
+
+The SQLite database ([`detective.db`](file:///c:/Users/pranj/DataPipelineDetective/detective.db)) is automatically initialized on module import via [`init_db`](file:///c:/Users/pranj/DataPipelineDetective/database.py#L8-L34) in [`database.py`](file:///c:/Users/pranj/DataPipelineDetective/database.py). It consists of two relational tables:
+
+```sql
+-- 1. User Management & Authentication Table
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL
+);
+
+-- 2. Investigations History Table (Stores ONLY JSON diagnostic metadata)
+CREATE TABLE IF NOT EXISTS investigations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    filename TEXT,
+    timestamp TEXT,
+    result_json TEXT,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+);
+```
+
+### Bcrypt Authentication & Password Hashing
+
+User authentication is implemented using industry-standard **Bcrypt** cryptographic salted hashing:
+- **Salt Generation & Hashing**: When a user registers via [`create_user`](file:///c:/Users/pranj/DataPipelineDetective/database.py#L46-L58), [`hash_password`](file:///c:/Users/pranj/DataPipelineDetective/database.py#L36-L40) encodes the password to UTF-8 bytes, truncates it to 72 bytes (the standard bcrypt password limit to prevent denial-of-service and buffer overruns), and generates a random salt with `bcrypt.gensalt()`.
+- **Constant-Time Verification**: During login via [`authenticate_user`](file:///c:/Users/pranj/DataPipelineDetective/database.py#L60-L69), [`verify_password`](file:///c:/Users/pranj/DataPipelineDetective/database.py#L42-L44) securely compares the plaintext attempt against the stored hash using `bcrypt.checkpw()`, defending against timing attacks.
+
+```python
+# database.py password handling
+def hash_password(password: str) -> str:
+    pwd_bytes = password.encode('utf-8')[:72]
+    return bcrypt.hashpw(pwd_bytes, bcrypt.gensalt()).decode('utf-8')
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    pwd_bytes = plain_password.encode('utf-8')[:72]
+    return bcrypt.checkpw(pwd_bytes, hashed_password.encode('utf-8'))
+```
+
+### Privacy-by-Design & Ephemeral Sandbox Lifecycle
+
+Data Pipeline Detective enforces a strict **Zero Raw Data Retention** policy:
+- **Temporary Sandbox Ingestion**: When a CSV log is submitted to [`/api/investigate`](file:///c:/Users/pranj/DataPipelineDetective/main.py#L36-L77), it is buffered into a temporary file using Python's `tempfile.NamedTemporaryFile`.
+- **Immediate Disk Cleanup**: In [`main.py`](file:///c:/Users/pranj/DataPipelineDetective/main.py#L72-L76), a `finally:` block executes `os.remove(temp_file_path)` immediately after agent evaluation completes, regardless of whether the execution succeeded or failed.
+- **Metadata-Only Persistence**: Only the computed diagnostic report—statistical profiles, anomaly counts, Groq root-cause text, SQL repair scripts, and Pydantic schemas—is serialized to JSON and stored in the `investigations` table via [`save_investigation`](file:///c:/Users/pranj/DataPipelineDetective/database.py#L71-L80). Proprietary row-level customer data never touches long-term storage.
+
+---
+
 ## 🛠️ Technology Stack
 
 | Category | Technology | Purpose |
 | :--- | :--- | :--- |
 | **Core Runtime** | [Python 3.10+](https://www.python.org/) | Base programming language environment |
+| **Database & Persistence** | [SQLite](https://www.sqlite.org/) | Zero-config embedded relational database storing user accounts and JSON history |
+| **Security & Authentication** | [Bcrypt](https://github.com/pyca/bcrypt) | Salted password hashing (72-byte safe) and secure authentication verification |
 | **Agent Orchestration** | [LangGraph](https://github.com/langchain-ai/langgraph) | Cyclic & acyclic stateful multi-agent graph with conditional branching |
 | **Cognitive / LLM Engine** | [Groq API](https://groq.com/) via [langchain-groq](https://github.com/langchain-ai/langchain) | Ultra-fast LLM inference for root-cause synthesis and business risk analysis |
 | **Machine Learning** | [Scikit-learn](https://scikit-learn.org/) | Isolation Forest algorithm for unsupervised multivariate anomaly detection |
 | **Data Engine & Profiling** | [Pandas](https://pandas.pydata.org/) | Dataset profiling, statistical summaries, and in-memory validation simulation |
 | **Data Contracts** | [Pydantic v2](https://docs.pydantic.dev/) | Strongly typed data contracts and schema guardrails (`extra='forbid'`) |
-| **Web Framework** | [FastAPI](https://fastapi.tiangolo.com/) | High-performance asynchronous REST API backend |
+| **Web Framework** | [FastAPI](https://fastapi.tiangolo.com/) | High-performance asynchronous REST API backend with auth & history endpoints |
 | **ASGI Server** | [Uvicorn](https://www.uvicorn.org/) | Production-ready ASGI server supporting hot-reloading |
 | **Config & Secrets** | [python-dotenv](https://github.com/theskumar/python-dotenv) | Automated `.env` file environment variable loading |
-| **Frontend UI** | HTML5, JavaScript, [Tailwind CSS](https://tailwindcss.com/) | Modern, responsive dark-mode diagnostic dashboard |
+| **Frontend UI** | HTML5, JavaScript, [Tailwind CSS](https://tailwindcss.com/) | Responsive dark-mode dashboard with authentication modal & history sidebar |
+| **Markdown Rendering** | [Marked.js](https://marked.js.org/) | Client-side markdown renderer for dynamic LLM diagnostic reports |
 | **Iconography** | [Lucide Icons](https://lucide.dev/) | Semantic SVG icons for status badges and diagnostic cards |
 
 ---
@@ -221,6 +316,7 @@ graph TD
     Root --> Agents["📁 Agents/<br/><i>LangGraph Multi-Agent Module</i>"]
     Root --> Eval["📁 evaluation/<br/><i>Benchmarking & Test Suite</i>"]
     Root --> Frontend["📁 frontend/<br/><i>Tailwind Dashboard Assets</i>"]
+    Root --> DB["💾 Database & Persistence"]
     Root --> Core["⚙️ Core Entrypoints & Config"]
 
     Agents --> A1["profiler.py<br/><i>Schema & Null Profiler</i>"]
@@ -230,6 +326,9 @@ graph TD
     Agents --> A5["sql_fix.py<br/><i>Window CTE Remediation</i>"]
     Agents --> A6["validation.py<br/><i>Pandas In-Memory Simulation</i>"]
     Agents --> A7["contract.py<br/><i>Pydantic v2 Guardrails</i>"]
+
+    DB --> D1["database.py<br/><i>Bcrypt Auth & SQLite Store</i>"]
+    DB --> D2["detective.db<br/><i>Users & Investigation History</i>"]
 
     Eval --> E1["evaluation_agent.py<br/><i>Automated Test Harness</i>"]
     Eval --> E2["test_cases/<br/><i>Sample CSV Edge Cases</i>"]
@@ -259,11 +358,13 @@ DataPipelineDetective/
 │   ├── evaluation_agent.py        # Automated test harness for agent accuracy (in-progress)
 │   └── test_cases/                # Sample test datasets and edge cases
 ├── frontend/                      # Static dashboard assets
-│   └── index.html                 # Single-page dashboard UI (Tailwind CSS + Lucide)
+│   └── index.html                 # Single-page dashboard UI with Auth & History Sidebar
 ├── .env                           # Environment configuration (GROQ_API_KEY)
 ├── .gitignore                     # Git ignore rules
-├── main.py                        # FastAPI application entrypoint & API routing
-├── requirements.txt               # Python package dependencies
+├── database.py                    # SQLite persistence & bcrypt password authentication module
+├── detective.db                   # Embedded SQLite database (Users & Investigation History)
+├── main.py                        # FastAPI application entrypoint, auth routes & admin panel
+├── requirements.txt               # Python package dependencies (FastAPI, LangGraph, Groq, Bcrypt)
 └── README.md                      # Comprehensive project documentation
 ```
 
@@ -314,10 +415,15 @@ source .venv/bin/activate
 
 ### 3. Install Dependencies
 
+Install all core packages including `fastapi`, `uvicorn`, `bcrypt`, `langgraph`, and `langchain-groq`:
+
 ```bash
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+> [!NOTE]
+> Database setup is completely automatic! On application launch, [`database.py`](file:///c:/Users/pranj/DataPipelineDetective/database.py) runs [`init_db`](file:///c:/Users/pranj/DataPipelineDetective/database.py#L8-L34) to create [`detective.db`](file:///c:/Users/pranj/DataPipelineDetective/detective.db) and required tables if they do not already exist. No manual SQL scripts or migration tools are required.
 
 ---
 
@@ -330,7 +436,7 @@ GROQ_API_KEY=gsk_your_groq_api_key_here
 ```
 
 > [!NOTE]
-> If `GROQ_API_KEY` is not provided, the system seamlessly engages its built-in fallback engine to provide heuristic diagnostic reports without crashing.
+> If `GROQ_API_KEY` is not provided, the system seamlessly engages its built-in fallback engine in [`Agents/diagnostic.py`](file:///c:/Users/pranj/DataPipelineDetective/Agents/diagnostic.py) to provide heuristic diagnostic reports without crashing.
 
 ---
 
@@ -349,36 +455,75 @@ Once launched, navigate to:
 
 ## 💻 Usage Guide
 
-### Web Interface
+### 1. User Authentication (Login & Signup)
 
-1. Navigate to **[http://localhost:8000](http://localhost:8000)**.
-2. Select a pipeline CSV file under **Upload Corrupted CSV Pipeline Log**.
-3. Click **Dispatch Agents**.
-4. The system streams the file through the LangGraph multi-agent team:
-   - **LLM Diagnostic & Impact Reasoning Card**: Displays Groq-synthesized root-cause analysis and business consequence estimations.
-   - **Metric Snapshot Bar**: Highlights total rows, duplicates found, ML outliers flagged, and in-memory validation status (`SUCCESS` or `BYPASSED`).
-   - **Proposed SQL Remediation**: Shows partition-based deduplication CTEs and null coalescing scripts with a one-click copy button.
-   - **Pydantic Prevention Contract**: Displays strict, copy-ready Python schema guardrails to enforce at ingestion.
+When you first open **[http://localhost:8000](http://localhost:8000)**, the application presents a secure authentication modal:
+1. **Sign Up**: Click *"Don't have an account? Sign up"*, enter a username and password, and submit. The server hashes the password with **Bcrypt** and registers your account in SQLite.
+2. **Log In**: Enter your registered username and password. On successful authentication, your session (`user_id` and `username`) is stored in browser `localStorage`, and the diagnostic workspace unlocks.
+3. **Logout**: Click the **Logout** button at the top of the history sidebar at any time to clear local session state and return to the login screen.
 
 ---
 
-### REST API Endpoint
+### 2. Diagnostic Dashboard & History Sidebar
+
+Once logged in:
+1. **Upload Pipeline Log**: Under **Upload Corrupted CSV Pipeline Log**, click to select a `.csv` dataset.
+2. **Dispatch Agents**: Click **Dispatch Agents**. The file and your `user_id` are dispatched to [`POST /api/investigate`](file:///c:/Users/pranj/DataPipelineDetective/main.py#L36-L77).
+3. **Review Real-Time Findings**:
+   - **LLM Diagnostic & Impact Reasoning**: Markdown-rendered root-cause analysis and business consequence estimations.
+   - **Metric Snapshot Bar**: Total row counts, duplicate rows flagged, unsupervised ML outliers discovered, and validation status (`SUCCESS` or `BYPASSED`).
+   - **Proposed SQL Remediation**: Partition-based deduplication CTEs and null coalescing scripts with a one-click copy button.
+   - **Pydantic Prevention Contract**: Copy-ready strongly-typed schema guardrails.
+4. **Inspect Past Investigations**:
+   - The left sidebar automatically queries [`GET /api/history/{user_id}`](file:///c:/Users/pranj/DataPipelineDetective/main.py#L79-L81) and lists all prior investigations with timestamps and filenames.
+   - Click any past investigation to instantly reload its full diagnostics, metrics, SQL scripts, and data contracts without re-running models or uploading files again.
+
+---
+
+### 3. Live Container Admin Dashboard
+
+Data Pipeline Detective includes a container-level monitoring console accessible via:
+👉 **`http://localhost:8000/admin?key=mysecretkey`**
+
+*(You can configure `key` inside [`main.py`](file:///c:/Users/pranj/DataPipelineDetective/main.py#L90) for production deployments).*
+
+The admin console provides:
+- Total registered users count with user IDs and usernames.
+- Complete ledger of all investigations performed across the instance, including investigation ID, user ID, filename, and timestamp.
+
+---
+
+### 4. REST API Endpoints
 
 Integrate Data Pipeline Detective directly into data orchestrators (Airflow, Dagster, Prefect) or CI/CD pipelines.
 
-#### Endpoint: `POST /api/investigate`
-- **Content-Type**: `multipart/form-data`
-- **Parameter**: `file` (a valid `.csv` file)
+#### 1. User Registration
+- **Endpoint**: `POST /api/signup`
+- **Content-Type**: `application/x-www-form-urlencoded` or `multipart/form-data`
+- **Parameters**: `username` (string), `password` (string)
+- **Response**: `{"success": true, "user_id": 1, "username": "alice"}`
 
-#### Example using `cURL`:
+#### 2. User Authentication
+- **Endpoint**: `POST /api/login`
+- **Content-Type**: `application/x-www-form-urlencoded` or `multipart/form-data`
+- **Parameters**: `username` (string), `password` (string)
+- **Response**: `{"success": true, "user_id": 1, "username": "alice"}`
+
+#### 3. Investigation Dispatch
+- **Endpoint**: `POST /api/investigate`
+- **Content-Type**: `multipart/form-data`
+- **Parameters**: 
+  - `file`: CSV file payload
+  - `user_id`: Integer ID of the authenticated user
+
 ```bash
 curl -X POST "http://localhost:8000/api/investigate" \
   -H "accept: application/json" \
-  -H "Content-Type: multipart/form-data" \
+  -F "user_id=1" \
   -F "file=@pipeline_sample.csv"
 ```
 
-#### Example JSON Response:
+#### Example Response:
 ```json
 {
   "file_path": "C:\\Users\\...\\tmp_abc123.csv",
@@ -417,6 +562,10 @@ curl -X POST "http://localhost:8000/api/investigate" \
 }
 ```
 
+#### 4. Query Investigation History
+- **Endpoint**: `GET /api/history/{user_id}`
+- **Response**: Array of past investigations for the specified user with timestamps, filenames, and cached result JSON states.
+
 ---
 
 ## 🔮 Roadmap & Evaluation
@@ -427,9 +576,16 @@ curl -X POST "http://localhost:8000/api/investigate" \
 - [x] **Automated SQL Remediation**: Self-healing window function CTEs and null coalesce clauses.
 - [x] **In-Memory Validation**: Pandas-based simulation verifying row reconciliation and duplicate/null resolution.
 - [x] **Preventative Data Contracts**: Automated Pydantic v2 schema generation with `extra = 'forbid'`.
-- [x] **Interactive Dashboard**: Modern dark-slate UI with live metrics and one-click code copying.
+- [x] **Secure Bcrypt Authentication**: Salted, one-way password hashing and authenticated sessions.
+- [x] **SQLite Persistence & History Tracking**: Secure historical audit trail persisting JSON diagnostic states with zero raw data retention.
+- [x] **Interactive Dashboard & History Sidebar**: Modern dark-slate UI with live metrics, one-click code copying, and instant past report inspection.
+- [x] **Live Container Admin Panel**: Secret-protected observability console to monitor registered users and container audit logs.
 - [ ] **Automated Evaluation Suite (`evaluation/evaluation_agent.py`)**: Quantitative benchmarking harness measuring diagnostic precision and remediation accuracy across synthetic dirty datasets.
 - [ ] **Data Warehouse Connectors**: Direct integrations with Snowflake, BigQuery, and Databricks.
 - [ ] **dbt Model & Test Generation**: Export remediation queries directly as dbt `.sql` models and `.yml` schema tests.
 
 ---
+
+## 📄 License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
