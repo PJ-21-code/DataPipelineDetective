@@ -1,9 +1,8 @@
 import sqlite3
 import json
 from datetime import datetime
-from passlib.context import CryptContext
+import bcrypt
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 DB_NAME = "detective.db"
 
 def init_db():
@@ -34,11 +33,15 @@ def init_db():
     conn.commit()
     conn.close()
 
-def hash_password(password: str):
-    return pwd_context.hash(password)
+def hash_password(password: str) -> str:
+    # Encode password to bytes and truncate to 72 bytes (bcrypt limit)
+    pwd_bytes = password.encode('utf-8')[:72]
+    hashed = bcrypt.hashpw(pwd_bytes, bcrypt.gensalt())
+    return hashed.decode('utf-8')
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    pwd_bytes = plain_password.encode('utf-8')[:72]
+    return bcrypt.checkpw(pwd_bytes, hashed_password.encode('utf-8'))
 
 def create_user(username, password):
     conn = sqlite3.connect(DB_NAME)
@@ -93,4 +96,5 @@ def get_user_investigations(user_id):
         })
     return history
 
+# Initialize DB on module import
 init_db()
