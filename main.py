@@ -7,6 +7,10 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import database
 
+from fastapi.responses import HTMLResponse
+from fastapi import Query, HTTPException
+import sqlite3
+
 from Agents.graph import build_graph
 
 app = FastAPI(title="Data Pipeline Detective")
@@ -79,3 +83,57 @@ def get_history(user_id: int):
 @app.get("/", response_class=FileResponse)
 async def get_frontend():
     return "frontend/index.html"
+
+@app.get("/admin", response_class=HTMLResponse)
+async def admin_dashboard(key: str = Query(...)):
+    # Change "mysecretkey" to a secure secret key only you know
+    if key != "mysecretkey":
+        raise HTTPException(status_code=403, detail="Unauthorized access")
+    
+    conn = sqlite3.connect("detective.db")
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT id, username FROM users")
+    users = cursor.fetchall()
+    
+    cursor.execute("SELECT id, user_id, filename, timestamp FROM investigations ORDER BY id DESC")
+    investigations = cursor.fetchall()
+    
+    conn.close()
+    
+    # Generate clean HTML view of the live container database
+    users_rows = "".join([f"<tr><td class='p-2 border border-slate-800'>{u[0]}</td><td class='p-2 border border-slate-800'>{u[1]}</td></tr>" for u in users])
+    inv_rows = "".join([f"<tr><td class='p-2 border border-slate-800'>{i[0]}</td><td class='p-2 border border-slate-800'>{i[1]}</td><td class='p-2 border border-slate-800'>{i[2]}</td><td class='p-2 border border-slate-800'>{i[3]}</td></tr>" for i in investigations])
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Detective Admin Panel</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-slate-950 text-slate-100 p-8 font-sans">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <h1 class="text-3xl font-extrabold text-blue-400">Live Render Container Database</h1>
+            
+            <div>
+                <h2 class="text-lg font-semibold text-amber-400 mb-2">Registered Users ({len(users)})</h2>
+                <table class="w-full border border-slate-800 bg-slate-900 text-left text-sm rounded-xl overflow-hidden">
+                    <tr class="bg-slate-800"><th class="p-2 border border-slate-700">ID</th><th class="p-2 border border-slate-700">Username</th></tr>
+                    {users_rows if users_rows else "<tr><td colspan='2' class='p-4 text-slate-500 text-center'>No users found.</td></tr>"}
+                </table>
+            </div>
+
+            <div>
+                <h2 class="text-lg font-semibold text-emerald-400 mb-2">Past Investigations ({len(investigations)})</h2>
+                <table class="w-full border border-slate-800 bg-slate-900 text-left text-sm rounded-xl overflow-hidden">
+                    <tr class="bg-slate-800"><th class="p-2 border border-slate-700">ID</th><th class="p-2 border border-slate-700">User ID</th><th class="p-2 border border-slate-700">Filename</th><th class="p-2 border border-slate-700">Timestamp</th></tr>
+                    {inv_rows if inv_rows else "<tr><td colspan='4' class='p-4 text-slate-500 text-center'>No investigations found.</td></tr>"}
+                </table>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    return HTMLResponse(content=html_content)
