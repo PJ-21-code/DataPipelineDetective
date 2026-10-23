@@ -12,3 +12,6 @@ venv/
 
 # Temporary uploads/logs
 *.tmp
+
+detective.db
+temp/
