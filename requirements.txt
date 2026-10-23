@@ -7,6 +7,4 @@ python-multipart
 langgraph 
 langchain-groq
 python-dotenv
-passlib[bcrypt] 
-python-jose 
-python-multipart
+bycrypt
