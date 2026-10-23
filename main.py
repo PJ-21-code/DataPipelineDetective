@@ -10,6 +10,9 @@ import database
 from fastapi.responses import HTMLResponse
 from fastapi import Query, HTTPException
 import sqlite3
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from Agents.graph import build_graph
 
@@ -83,11 +86,11 @@ def get_history(user_id: int):
 @app.get("/", response_class=FileResponse)
 async def get_frontend():
     return "frontend/index.html"
-
+secret_key= os.getenv("SECRET_KEY")
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_dashboard(key: str = Query(...)):
-    # Change "mysecretkey" to a secure secret key only you know
-    if key != "mysecretkey":
+    
+    if key != secret_key:
         raise HTTPException(status_code=403, detail="Unauthorized access")
     
     conn = sqlite3.connect("detective.db")
