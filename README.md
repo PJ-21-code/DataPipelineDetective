@@ -38,8 +38,7 @@
 - [Usage Guide](#-usage-guide)
   - [1. User Authentication (Login & Signup)](#1-user-authentication-login--signup)
   - [2. Diagnostic Dashboard & History Sidebar](#2-diagnostic-dashboard--history-sidebar)
-  - [3. Live Container Admin Dashboard](#3-live-container-admin-dashboard)
-  - [4. REST API Endpoints](#4-rest-api-endpoints)
+  - [3. REST API Endpoints](#3-rest-api-endpoints)
 - [Roadmap & Evaluation](#-roadmap--evaluation)
 - [License](#-license)
 
@@ -77,7 +76,6 @@ Powered by **LangGraph** multi-agent orchestration, **Groq high-speed LLM infere
 - **Persistent Investigation History (SQLite)**: Automatically persists all diagnostic results (profile, anomaly count, Groq diagnostic text, generated SQL fixes, Pydantic contracts) to [`detective.db`](file:///c:/Users/pranj/DataPipelineDetective/detective.db) via [`database.py`](file:///c:/Users/pranj/DataPipelineDetective/database.py) for instant review.
 - **Zero Raw Data Retention (Privacy-by-Design)**: Ephemeral sandbox file lifecycle guarantees raw pipeline datasets are never persisted to disk or database—only sanitized diagnostic metadata and generated code are preserved.
 - **Interactive History Sidebar**: Sidebar navigation in the UI allowing users to switch between past investigations without re-running compute or re-uploading files.
-- **Container Admin Panel (`/admin`)**: Built-in secured administrative view (`/admin?key=...`) to observe registered users and audit past pipeline investigation logs across the live container.
 - **Graceful Fallback Mechanism**: Built-in resilience ensures that even if external LLM APIs experience rate-limiting or network timeouts, deterministic heuristic diagnostics are provided without breaking the pipeline.
 
 ---
@@ -87,7 +85,7 @@ Powered by **LangGraph** multi-agent orchestration, **Groq high-speed LLM infere
 Data Pipeline Detective is engineered as a layered, stateful multi-agent system:
 
 1. **Presentation Layer**: A single-page web dashboard ([`frontend/index.html`](file:///c:/Users/pranj/DataPipelineDetective/frontend/index.html)) built with Tailwind CSS, Lucide Icons, Marked.js, and vanilla JavaScript. Features authentication modals (Sign Up / Log In), an investigation history sidebar with instant historical report switching, drag-and-drop CSV upload, live status spinners, and one-click copy buttons for SQL fixes and Pydantic contracts.
-2. **API & Service Layer**: A high-performance **FastAPI** ASGI server ([`main.py`](file:///c:/Users/pranj/DataPipelineDetective/main.py)) running on **Uvicorn**. Exposes endpoints for user registration (`/api/signup`), authentication (`/api/login`), multipart investigation dispatch with user attribution (`/api/investigate`), historical record querying (`/api/history/{user_id}`), and a secured administrative overview (`/admin`). Manages ephemeral temporary sandbox files and guarantees cleanup.
+2. **API & Service Layer**: A high-performance **FastAPI** ASGI server ([`main.py`](file:///c:/Users/pranj/DataPipelineDetective/main.py)) running on **Uvicorn**. Exposes endpoints for user registration (`/api/signup`), authentication (`/api/login`), multipart investigation dispatch with user attribution (`/api/investigate`), and historical record querying (`/api/history/{user_id}`). Manages ephemeral temporary sandbox files and guarantees cleanup.
 3. **Database & Security Layer**: A dedicated persistence module ([`database.py`](file:///c:/Users/pranj/DataPipelineDetective/database.py)) backed by an embedded **SQLite** database ([`detective.db`](file:///c:/Users/pranj/DataPipelineDetective/detective.db)). Manages relational tables for `users` and `investigations`, enforcing foreign key integrity, bcrypt password hashing with salt generation, and JSON payload serialization/deserialization.
 4. **Agent Orchestration Layer**: A compiled **LangGraph** `StateGraph` ([`Agents/graph.py`](file:///c:/Users/pranj/DataPipelineDetective/Agents/graph.py)) passing a centralized `PipelineState` ([`Agents/state.py`](file:///c:/Users/pranj/DataPipelineDetective/Agents/state.py)) through modular agent nodes with dynamic conditional branching (`route_after_diagnostic`).
 5. **Cognitive & Machine Learning Layer**:
@@ -114,7 +112,6 @@ flowchart TD
         UPLOAD["File Handler &<br/>Temp Sandbox Storage"]
         STATE_INIT["Initialize PipelineState"]
         CLEANUP["Ephemeral File Cleanup<br/>(os.remove)"]
-        ADMIN_EP["Admin Dashboard<br/>(/admin?key=...)"]
     end
 
     subgraph DB ["Database & Persistence (database.py)"]
@@ -154,7 +151,6 @@ flowchart TD
     CLEANUP -->|Persist JSON State| TBL_INV
     CLEANUP -->|Return JSON| DASH_UI
     CLEANUP -->|Return JSON| API_CALL
-    ADMIN_EP <-->|Query Live Stats| SQLITE
 ```
 
 ---
@@ -363,7 +359,7 @@ DataPipelineDetective/
 ├── .gitignore                     # Git ignore rules
 ├── database.py                    # SQLite persistence & bcrypt password authentication module
 ├── detective.db                   # Embedded SQLite database (Users & Investigation History)
-├── main.py                        # FastAPI application entrypoint, auth routes & admin panel
+├── main.py                        # FastAPI application entrypoint & API routing
 ├── requirements.txt               # Python package dependencies (FastAPI, LangGraph, Groq, Bcrypt)
 └── README.md                      # Comprehensive project documentation
 ```
@@ -480,20 +476,7 @@ Once logged in:
 
 ---
 
-### 3. Live Container Admin Dashboard
-
-Data Pipeline Detective includes a container-level monitoring console accessible via:
-👉 **`http://localhost:8000/admin?key=mysecretkey`**
-
-*(You can configure `key` inside [`main.py`](file:///c:/Users/pranj/DataPipelineDetective/main.py#L90) for production deployments).*
-
-The admin console provides:
-- Total registered users count with user IDs and usernames.
-- Complete ledger of all investigations performed across the instance, including investigation ID, user ID, filename, and timestamp.
-
----
-
-### 4. REST API Endpoints
+### 3. REST API Endpoints
 
 Integrate Data Pipeline Detective directly into data orchestrators (Airflow, Dagster, Prefect) or CI/CD pipelines.
 
@@ -579,7 +562,6 @@ curl -X POST "http://localhost:8000/api/investigate" \
 - [x] **Secure Bcrypt Authentication**: Salted, one-way password hashing and authenticated sessions.
 - [x] **SQLite Persistence & History Tracking**: Secure historical audit trail persisting JSON diagnostic states with zero raw data retention.
 - [x] **Interactive Dashboard & History Sidebar**: Modern dark-slate UI with live metrics, one-click code copying, and instant past report inspection.
-- [x] **Live Container Admin Panel**: Secret-protected observability console to monitor registered users and container audit logs.
 - [ ] **Automated Evaluation Suite (`evaluation/evaluation_agent.py`)**: Quantitative benchmarking harness measuring diagnostic precision and remediation accuracy across synthetic dirty datasets.
 - [ ] **Data Warehouse Connectors**: Direct integrations with Snowflake, BigQuery, and Databricks.
 - [ ] **dbt Model & Test Generation**: Export remediation queries directly as dbt `.sql` models and `.yml` schema tests.
