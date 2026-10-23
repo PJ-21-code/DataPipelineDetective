@@ -86,7 +86,9 @@ def get_history(user_id: int):
 @app.get("/", response_class=FileResponse)
 async def get_frontend():
     return "frontend/index.html"
+
 secret_key= os.getenv("SECRET_KEY")
+
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_dashboard(key: str = Query(...)):
     
