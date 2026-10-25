@@ -1,21 +1,18 @@
-import os
 import math
+import os
 import shutil
 import tempfile
 import traceback
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Query
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
-import database
-
-from fastapi.responses import HTMLResponse
-from fastapi import Query, HTTPException
 import sqlite3
 from dotenv import load_dotenv
 
 load_dotenv()
 
 from Agents.graph import build_graph
+import database
 
 app = FastAPI(title="Data Pipeline Detective")
 
@@ -78,8 +75,11 @@ async def investigate_pipeline(
         # Run the agent team workflow
         final_state = pipeline_graph.invoke(initial_state)
         
-        # Save ONLY the resulting JSON report to SQLite database linked to user
-        database.save_investigation(user_id, file.filename, final_state)
+        # Clean NaNs and Infs FIRST so json.dumps inside database storage won't crash
+        cleaned_state = clean_nans(final_state)
+        
+        # Save the sanitized JSON report to SQLite database linked to user
+        database.save_investigation(user_id, file.filename, cleaned_state)
 
     except Exception as e:
         traceback.print_exc()
@@ -89,7 +89,7 @@ async def investigate_pipeline(
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
 
-    return clean_nans(final_state)
+    return cleaned_state
 
 @app.get("/api/history/{user_id}")
 def get_history(user_id: int):
@@ -99,11 +99,10 @@ def get_history(user_id: int):
 async def get_frontend():
     return "frontend/index.html"
 
-secret_key= os.getenv("SECRET_KEY")
+secret_key = os.getenv("SECRET_KEY")
 
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_dashboard(key: str = Query(...)):
-    
     if key != secret_key:
         raise HTTPException(status_code=403, detail="Unauthorized access")
     
