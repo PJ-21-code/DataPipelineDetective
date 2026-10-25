@@ -1,5 +1,6 @@
 import math
 import os
+import numpy as np
 import shutil
 import tempfile
 import traceback
@@ -21,13 +22,16 @@ pipeline_graph = build_graph()
 app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 
 def clean_nans(obj):
-    """Recursively convert float NaN or Infinity to None for valid JSON serialization."""
-    if isinstance(obj, float):
-        if math.isnan(obj) or math.isinf(obj):
+    """Recursively convert float NaN, Infinity, and numpy scalar types to None for valid JSON serialization."""
+    if isinstance(obj, (float, np.floating)):
+        if math.isnan(obj) or math.isinf(obj) or np.isnan(obj) or np.isinf(obj):
             return None
+        return float(obj)
+    elif isinstance(obj, (int, np.integer)):
+        return int(obj)
     elif isinstance(obj, dict):
-        return {k: clean_nans(v) for k, v in obj.items()}
-    elif isinstance(obj, list):
+        return {str(k): clean_nans(v) for k, v in obj.items()}
+    elif isinstance(obj, (list, tuple)):
         return [clean_nans(v) for v in obj]
     return obj
 
@@ -93,7 +97,8 @@ async def investigate_pipeline(
 
 @app.get("/api/history/{user_id}")
 def get_history(user_id: int):
-    return database.get_user_investigations(user_id)
+    history= database.get_user_investigations(user_id)
+    return clean_nans(history)
 
 @app.get("/", response_class=FileResponse)
 async def get_frontend():
