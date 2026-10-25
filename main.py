@@ -1,4 +1,5 @@
 import os
+import math
 import shutil
 import tempfile
 import traceback
@@ -21,6 +22,17 @@ app = FastAPI(title="Data Pipeline Detective")
 pipeline_graph = build_graph()
 
 app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+
+def clean_nans(obj):
+    """Recursively convert float NaN or Infinity to None for valid JSON serialization."""
+    if isinstance(obj, float):
+        if math.isnan(obj) or math.isinf(obj):
+            return None
+    elif isinstance(obj, dict):
+        return {k: clean_nans(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [clean_nans(v) for v in obj]
+    return obj
 
 @app.post("/api/signup")
 def signup(username: str = Form(...), password: str = Form(...)):
@@ -77,7 +89,7 @@ async def investigate_pipeline(
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
 
-    return final_state
+    return clean_nans(final_state)
 
 @app.get("/api/history/{user_id}")
 def get_history(user_id: int):
