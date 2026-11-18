@@ -567,5 +567,6 @@ curl -X POST "http://localhost:8000/api/investigate" \
 - [ ] **dbt Model & Test Generation**: Export remediation queries directly as dbt `.sql` models and `.yml` schema tests.
 
 ---
-
+## Deployment Link
+[Live Demo](https://datapipelinedetective.onrender.com/)
 
