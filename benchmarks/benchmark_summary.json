@@ -1,0 +1,572 @@
+{
+  "benchmark_timestamp": "2026-11-20T13:55:42.000321",
+  "total_suite_duration_seconds": 522.89,
+  "environment": {
+    "python_version": "3.13.2 (tags/v3.13.2:4f8bb39, Feb  4 2025, 15:23:48) [MSC v.1942 64 bit (AMD64)]",
+    "platform": "win32"
+  },
+  "anomaly_detection": {
+    "0pct_clean": {
+      "scenario": "0pct_clean",
+      "n_samples": 1000,
+      "true_anomalies": 0,
+      "true_anomaly_rate": 0.0,
+      "predicted_anomalies": 50,
+      "reported_percentage": 5.0,
+      "confusion_matrix": {
+        "TP": 0,
+        "FP": 50,
+        "TN": 950,
+        "FN": 0
+      },
+      "metrics": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "false_positive_rate": 0.05,
+        "accuracy": 0.95
+      }
+    },
+    "2pct": {
+      "scenario": "2pct",
+      "n_samples": 1000,
+      "true_anomalies": 20,
+      "true_anomaly_rate": 0.02,
+      "predicted_anomalies": 50,
+      "reported_percentage": 5.0,
+      "confusion_matrix": {
+        "TP": 20,
+        "FP": 30,
+        "TN": 950,
+        "FN": 0
+      },
+      "metrics": {
+        "precision": 0.4,
+        "recall": 1.0,
+        "f1_score": 0.5714,
+        "false_positive_rate": 0.0306,
+        "accuracy": 0.97
+      }
+    },
+    "5pct": {
+      "scenario": "5pct",
+      "n_samples": 1000,
+      "true_anomalies": 50,
+      "true_anomaly_rate": 0.05,
+      "predicted_anomalies": 50,
+      "reported_percentage": 5.0,
+      "confusion_matrix": {
+        "TP": 50,
+        "FP": 0,
+        "TN": 950,
+        "FN": 0
+      },
+      "metrics": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "false_positive_rate": 0.0,
+        "accuracy": 1.0
+      }
+    },
+    "10pct": {
+      "scenario": "10pct",
+      "n_samples": 1000,
+      "true_anomalies": 100,
+      "true_anomaly_rate": 0.1,
+      "predicted_anomalies": 50,
+      "reported_percentage": 5.0,
+      "confusion_matrix": {
+        "TP": 50,
+        "FP": 0,
+        "TN": 900,
+        "FN": 50
+      },
+      "metrics": {
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1_score": 0.6667,
+        "false_positive_rate": 0.0,
+        "accuracy": 0.95
+      }
+    },
+    "15pct": {
+      "scenario": "15pct",
+      "n_samples": 1000,
+      "true_anomalies": 150,
+      "true_anomaly_rate": 0.15,
+      "predicted_anomalies": 50,
+      "reported_percentage": 5.0,
+      "confusion_matrix": {
+        "TP": 50,
+        "FP": 0,
+        "TN": 850,
+        "FN": 100
+      },
+      "metrics": {
+        "precision": 1.0,
+        "recall": 0.3333,
+        "f1_score": 0.5,
+        "false_positive_rate": 0.0,
+        "accuracy": 0.9
+      }
+    }
+  },
+  "pipeline_performance": {
+    "end_to_end_compute": {
+      "100": {
+        "records": 100,
+        "iterations": 15,
+        "mean_latency_ms": 3777.56,
+        "std_latency_ms": 2471.33,
+        "p50_latency_ms": 2102.46,
+        "p95_latency_ms": 7746.6,
+        "min_latency_ms": 1617.81,
+        "max_latency_ms": 7911.53,
+        "throughput_records_per_sec": 26.5
+      },
+      "1000": {
+        "records": 1000,
+        "iterations": 15,
+        "mean_latency_ms": 7107.14,
+        "std_latency_ms": 849.88,
+        "p50_latency_ms": 6799.46,
+        "p95_latency_ms": 8685.78,
+        "min_latency_ms": 5808.8,
+        "max_latency_ms": 8808.19,
+        "throughput_records_per_sec": 140.7
+      },
+      "10000": {
+        "records": 10000,
+        "iterations": 15,
+        "mean_latency_ms": 7560.53,
+        "std_latency_ms": 1002.08,
+        "p50_latency_ms": 7648.73,
+        "p95_latency_ms": 9139.95,
+        "min_latency_ms": 5846.87,
+        "max_latency_ms": 9156.29,
+        "throughput_records_per_sec": 1322.7
+      }
+    },
+    "node_breakdown": {
+      "100": {
+        "profiler": {
+          "mean_ms": 4.74,
+          "p50_ms": 4.46,
+          "p95_ms": 6.1,
+          "std_ms": 0.7
+        },
+        "anomaly": {
+          "mean_ms": 86.21,
+          "p50_ms": 84.61,
+          "p95_ms": 95.46,
+          "std_ms": 5.69
+        },
+        "sql_fix": {
+          "mean_ms": 0.01,
+          "p50_ms": 0.01,
+          "p95_ms": 0.01,
+          "std_ms": 0.0
+        },
+        "validation": {
+          "mean_ms": 2.23,
+          "p50_ms": 2.15,
+          "p95_ms": 2.83,
+          "std_ms": 0.41
+        },
+        "contract": {
+          "mean_ms": 1.33,
+          "p50_ms": 1.2,
+          "p95_ms": 1.87,
+          "std_ms": 0.33
+        }
+      },
+      "1000": {
+        "profiler": {
+          "mean_ms": 5.7,
+          "p50_ms": 5.49,
+          "p95_ms": 7.07,
+          "std_ms": 0.76
+        },
+        "anomaly": {
+          "mean_ms": 94.22,
+          "p50_ms": 94.38,
+          "p95_ms": 96.53,
+          "std_ms": 1.45
+        },
+        "sql_fix": {
+          "mean_ms": 0.01,
+          "p50_ms": 0.01,
+          "p95_ms": 0.01,
+          "std_ms": 0.0
+        },
+        "validation": {
+          "mean_ms": 2.83,
+          "p50_ms": 2.76,
+          "p95_ms": 3.18,
+          "std_ms": 0.23
+        },
+        "contract": {
+          "mean_ms": 1.58,
+          "p50_ms": 1.49,
+          "p95_ms": 1.96,
+          "std_ms": 0.2
+        }
+      },
+      "10000": {
+        "profiler": {
+          "mean_ms": 16.43,
+          "p50_ms": 16.24,
+          "p95_ms": 17.39,
+          "std_ms": 0.6
+        },
+        "anomaly": {
+          "mean_ms": 200.34,
+          "p50_ms": 199.15,
+          "p95_ms": 206.36,
+          "std_ms": 3.73
+        },
+        "sql_fix": {
+          "mean_ms": 0.01,
+          "p50_ms": 0.01,
+          "p95_ms": 0.01,
+          "std_ms": 0.0
+        },
+        "validation": {
+          "mean_ms": 13.39,
+          "p50_ms": 13.14,
+          "p95_ms": 15.1,
+          "std_ms": 1.01
+        },
+        "contract": {
+          "mean_ms": 8.86,
+          "p50_ms": 8.69,
+          "p95_ms": 9.49,
+          "std_ms": 0.38
+        }
+      }
+    }
+  },
+  "conditional_routing": {
+    "architecture": {
+      "total_functional_nodes": 6,
+      "router_function": "route_after_diagnostic",
+      "conditional_target": "sql_fix_node vs contract_node"
+    },
+    "degraded_path": {
+      "nodes_executed": [
+        "profiler_node",
+        "anomaly_node",
+        "diagnostic_node",
+        "sql_fix_node",
+        "validation_node",
+        "contract_node"
+      ],
+      "nodes_count": 6,
+      "nodes_skipped": [],
+      "mean_latency_ms": 6578.41,
+      "p50_latency_ms": 6761.61,
+      "p95_latency_ms": 8010.09
+    },
+    "clean_bypassed_path": {
+      "nodes_executed": [
+        "profiler_node",
+        "anomaly_node",
+        "diagnostic_node",
+        "contract_node"
+      ],
+      "nodes_count": 4,
+      "nodes_skipped": [
+        "sql_fix_node",
+        "validation_node"
+      ],
+      "skipped_count": 2,
+      "mean_latency_ms": 104.95,
+      "p50_latency_ms": 104.46,
+      "p95_latency_ms": 112.89
+    },
+    "savings": {
+      "absolute_time_saved_ms": 6473.45,
+      "percentage_time_saved": 98.4,
+      "skipped_node_percentage": 33.33
+    },
+    "implementation_audit": {
+      "bug_detected": "bool(null_counts) in diagnostic.py always evaluates to True because profiler_node populates all column keys with 0.",
+      "recommendation": "Change condition to: any(v > 0 for v in null_counts.values()) to enable automatic bypass on pristine datasets in production."
+    }
+  },
+  "sql_remediation": {
+    "tests_evaluated": 5,
+    "total_defects_tested": 37,
+    "total_defects_resolved": 37,
+    "overall_remediation_success_rate": 100.0,
+    "sqlite_execution_success_rate": 100.0,
+    "test_details": [
+      {
+        "file_name": "remediation_duplicates.csv",
+        "initial_metrics": {
+          "total_rows": 10,
+          "duplicates": 3,
+          "null_values": 0,
+          "total_defects": 3
+        },
+        "generated_sql": "WITH ranked_data AS (\n    SELECT *,\n           ROW_NUMBER() OVER(PARTITION BY record_id ORDER BY (SELECT NULL)) as rn\n    FROM raw_pipeline_data\n)\nSELECT record_id, category, metric\nFROM ranked_data\nWHERE rn = 1;",
+        "sqlite_execution": {
+          "sql_execution_status": "SUCCESS",
+          "result_rows": 7,
+          "remaining_duplicates_in_sql": 0,
+          "remaining_nulls_in_sql": 0,
+          "error": null
+        },
+        "validation_node_result": {
+          "status": "SUCCESS",
+          "initial_rows": 10,
+          "final_rows": 7,
+          "duplicates_removed": 3,
+          "remaining_nulls": 0,
+          "message": "Validation passed successfully. Removed 3 duplicates and sanitized null records."
+        },
+        "resolution_metrics": {
+          "duplicates_removed": 3,
+          "nulls_fixed": 0,
+          "remaining_nulls": 0,
+          "remediation_success_rate": 100.0,
+          "fully_validated": true
+        }
+      },
+      {
+        "file_name": "remediation_nulls.csv",
+        "initial_metrics": {
+          "total_rows": 10,
+          "duplicates": 0,
+          "null_values": 6,
+          "total_defects": 6
+        },
+        "generated_sql": "SELECT id, COALESCE(col_int, 'DEFAULT_VALUE') AS col_int, COALESCE(col_str, 'DEFAULT_VALUE') AS col_str, COALESCE(col_float, 'DEFAULT_VALUE') AS col_float FROM raw_pipeline_data;",
+        "sqlite_execution": {
+          "sql_execution_status": "SUCCESS",
+          "result_rows": 10,
+          "remaining_duplicates_in_sql": 0,
+          "remaining_nulls_in_sql": 0,
+          "error": null
+        },
+        "validation_node_result": {
+          "status": "SUCCESS",
+          "initial_rows": 10,
+          "final_rows": 10,
+          "duplicates_removed": 0,
+          "remaining_nulls": 0,
+          "message": "Validation passed successfully. Removed 0 duplicates and sanitized null records."
+        },
+        "resolution_metrics": {
+          "duplicates_removed": 0,
+          "nulls_fixed": 6,
+          "remaining_nulls": 0,
+          "remediation_success_rate": 100.0,
+          "fully_validated": true
+        }
+      },
+      {
+        "file_name": "remediation_mixed.csv",
+        "initial_metrics": {
+          "total_rows": 60,
+          "duplicates": 10,
+          "null_values": 10,
+          "total_defects": 20
+        },
+        "generated_sql": "WITH ranked_data AS (\n    SELECT *,\n           ROW_NUMBER() OVER(PARTITION BY id ORDER BY (SELECT NULL)) as rn\n    FROM raw_pipeline_data\n)\nSELECT id, COALESCE(val, 'DEFAULT_VALUE') AS val, COALESCE(status, 'DEFAULT_VALUE') AS status\nFROM ranked_data\nWHERE rn = 1;",
+        "sqlite_execution": {
+          "sql_execution_status": "SUCCESS",
+          "result_rows": 50,
+          "remaining_duplicates_in_sql": 0,
+          "remaining_nulls_in_sql": 0,
+          "error": null
+        },
+        "validation_node_result": {
+          "status": "SUCCESS",
+          "initial_rows": 60,
+          "final_rows": 50,
+          "duplicates_removed": 10,
+          "remaining_nulls": 0,
+          "message": "Validation passed successfully. Removed 10 duplicates and sanitized null records."
+        },
+        "resolution_metrics": {
+          "duplicates_removed": 10,
+          "nulls_fixed": 10,
+          "remaining_nulls": 0,
+          "remediation_success_rate": 100.0,
+          "fully_validated": true
+        }
+      },
+      {
+        "file_name": "corrupted_users.csv",
+        "initial_metrics": {
+          "total_rows": 7,
+          "duplicates": 2,
+          "null_values": 2,
+          "total_defects": 4
+        },
+        "generated_sql": "WITH ranked_data AS (\n    SELECT *,\n           ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY (SELECT NULL)) as rn\n    FROM raw_pipeline_data\n)\nSELECT user_id, COALESCE(name, 'DEFAULT_VALUE') AS name, COALESCE(signup_date, 'DEFAULT_VALUE') AS signup_date, score\nFROM ranked_data\nWHERE rn = 1;",
+        "sqlite_execution": {
+          "sql_execution_status": "SUCCESS",
+          "result_rows": 5,
+          "remaining_duplicates_in_sql": 0,
+          "remaining_nulls_in_sql": 0,
+          "error": null
+        },
+        "validation_node_result": {
+          "status": "SUCCESS",
+          "initial_rows": 7,
+          "final_rows": 5,
+          "duplicates_removed": 2,
+          "remaining_nulls": 0,
+          "message": "Validation passed successfully. Removed 2 duplicates and sanitized null records."
+        },
+        "resolution_metrics": {
+          "duplicates_removed": 2,
+          "nulls_fixed": 2,
+          "remaining_nulls": 0,
+          "remediation_success_rate": 100.0,
+          "fully_validated": true
+        }
+      },
+      {
+        "file_name": "enterprise_failure.csv",
+        "initial_metrics": {
+          "total_rows": 10,
+          "duplicates": 2,
+          "null_values": 2,
+          "total_defects": 4
+        },
+        "generated_sql": "WITH ranked_data AS (\n    SELECT *,\n           ROW_NUMBER() OVER(PARTITION BY transaction_id ORDER BY (SELECT NULL)) as rn\n    FROM raw_pipeline_data\n)\nSELECT transaction_id, COALESCE(customer_id, 'DEFAULT_VALUE') AS customer_id, COALESCE(timestamp, 'DEFAULT_VALUE') AS timestamp, amount, currency, status\nFROM ranked_data\nWHERE rn = 1;",
+        "sqlite_execution": {
+          "sql_execution_status": "SUCCESS",
+          "result_rows": 8,
+          "remaining_duplicates_in_sql": 0,
+          "remaining_nulls_in_sql": 0,
+          "error": null
+        },
+        "validation_node_result": {
+          "status": "SUCCESS",
+          "initial_rows": 10,
+          "final_rows": 8,
+          "duplicates_removed": 2,
+          "remaining_nulls": 0,
+          "message": "Validation passed successfully. Removed 2 duplicates and sanitized null records."
+        },
+        "resolution_metrics": {
+          "duplicates_removed": 2,
+          "nulls_fixed": 2,
+          "remaining_nulls": 0,
+          "remediation_success_rate": 100.0,
+          "fully_validated": true
+        }
+      }
+    ]
+  },
+  "llm_diagnosis": {
+    "cases_evaluated": 5,
+    "tool_state_success_rate": 100.0,
+    "fallback_rate": 0.0,
+    "mean_accuracy": 96.67,
+    "latency_metrics": {
+      "mean_ms": 5248.71,
+      "p50_ms": 5389.97,
+      "p95_ms": 7124.78,
+      "min_ms": 3488.47,
+      "max_ms": 7557.56
+    },
+    "case_details": [
+      {
+        "case_name": "enterprise_failure.csv",
+        "latency_ms": 3488.47,
+        "state_schema_valid": true,
+        "is_fallback": false,
+        "has_issues_flag": true,
+        "diagnosis_length_chars": 2337,
+        "evaluation_checks": {
+          "has_root_cause_section": true,
+          "has_impact_section": true,
+          "identified_duplicates": true,
+          "identified_nulls": true,
+          "identified_anomalies": true,
+          "clean_recognized": true
+        },
+        "accuracy_score": 1.0,
+        "diagnosis_preview": "## 1. Root\u2011Cause Diagnosis  \n\n| Issue | Likely Cause | Evidence |\n|-------|--------------|----------|\n| **Duplicate rows (2 of 10)** | Duplicate ingestion or retry logic without deduplication. | 20\u202f% duplicate rate suggests a batch load that re\u2011proce..."
+      },
+      {
+        "case_name": "corrupted_users.csv",
+        "latency_ms": 5393.67,
+        "state_schema_valid": true,
+        "is_fallback": false,
+        "has_issues_flag": true,
+        "diagnosis_length_chars": 1911,
+        "evaluation_checks": {
+          "has_root_cause_section": true,
+          "has_impact_section": true,
+          "identified_duplicates": true,
+          "identified_nulls": true,
+          "identified_anomalies": true,
+          "clean_recognized": true
+        },
+        "accuracy_score": 1.0,
+        "diagnosis_preview": "## 1. Root\u2011Cause Diagnosis  \n| Issue | Likely Cause | Evidence |\n|-------|--------------|----------|\n| **Duplicate rows (2)** | Ingest process re\u2011runs without deduplication or primary key enforcement. | 2 duplicates in 7\u2011row dataset. |\n| **Null value..."
+      },
+      {
+        "case_name": "remediation_duplicates.csv",
+        "latency_ms": 4413.86,
+        "state_schema_valid": true,
+        "is_fallback": false,
+        "has_issues_flag": true,
+        "diagnosis_length_chars": 2493,
+        "evaluation_checks": {
+          "has_root_cause_section": true,
+          "has_impact_section": true,
+          "identified_duplicates": true,
+          "identified_nulls": true,
+          "identified_anomalies": true,
+          "clean_recognized": true
+        },
+        "accuracy_score": 1.0,
+        "diagnosis_preview": "**Data Quality Scan Summary**\n\n| Metric | Value |\n|--------|-------|\n| Total Rows | 10 |\n| Duplicate Rows | 3 |\n| Null Counts | `{'record_id': 0, 'category': 0, 'metric': 0}` |\n| ML Anomalies | 1 |\n\n---\n\n## 1. Root\u2011Cause Diagnosis\n\n| Symptom | Likely..."
+      },
+      {
+        "case_name": "remediation_nulls.csv",
+        "latency_ms": 7557.56,
+        "state_schema_valid": true,
+        "is_fallback": false,
+        "has_issues_flag": true,
+        "diagnosis_length_chars": 2937,
+        "evaluation_checks": {
+          "has_root_cause_section": true,
+          "has_impact_section": true,
+          "identified_duplicates": true,
+          "identified_nulls": true,
+          "identified_anomalies": true,
+          "clean_recognized": true
+        },
+        "accuracy_score": 1.0,
+        "diagnosis_preview": "## 1. Root\u2011Cause Diagnosis  \n\n| Column | Null Count | Likely Source |\n|--------|------------|---------------|\n| `col_int` | 2 | Missing or malformed integer values in the source (e.g., empty strings, \u201cN/A\u201d, or type mismatch). |\n| `col_str` | 2 | Inco..."
+      },
+      {
+        "case_name": "routing_clean.csv",
+        "latency_ms": 5389.97,
+        "state_schema_valid": true,
+        "is_fallback": false,
+        "has_issues_flag": true,
+        "diagnosis_length_chars": 2479,
+        "evaluation_checks": {
+          "has_root_cause_section": true,
+          "has_impact_section": true,
+          "identified_duplicates": true,
+          "identified_nulls": true,
+          "identified_anomalies": true,
+          "clean_recognized": false
+        },
+        "accuracy_score": 0.8333,
+        "diagnosis_preview": "## 1. Root\u2011Cause Diagnosis  \n| Symptom | Likely Cause | Supporting Evidence |\n|---------|--------------|---------------------|\n| **25 ML anomalies** | **Data drift or outlier generation** \u2013 The anomaly detector flagged 25 rows that deviate from the l..."
+      }
+    ]
+  }
+}

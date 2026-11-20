@@ -1,0 +1,11 @@
+id,col_int,col_str,col_float
+1,1.0,alpha,1.1
+2,2.0,beta,
+3,,gamma,3.3
+4,4.0,,4.4
+5,5.0,epsilon,5.5
+6,,zeta,6.6
+7,7.0,eta,
+8,8.0,,8.8
+9,9.0,iota,9.9
+10,10.0,kappa,10.0
