@@ -12,7 +12,9 @@
 [![TailwindCSS](https://img.shields.io/badge/UI-TailwindCSS-38B2AC.svg?logo=tailwind-css)](https://tailwindcss.com/)
 
 ---
-
+## Deployment Link
+[Live Demo](https://datapipelinedetective.onrender.com/)
+It may take 5 minutes to wake up due to render free tier
 ## 📖 Table of Contents
 - [Overview](#-overview)
 - [Key Features](#-key-features)
@@ -567,6 +569,5 @@ curl -X POST "http://localhost:8000/api/investigate" \
 - [ ] **dbt Model & Test Generation**: Export remediation queries directly as dbt `.sql` models and `.yml` schema tests.
 
 ---
-## Deployment Link
-[Live Demo](https://datapipelinedetective.onrender.com/)
+
 
